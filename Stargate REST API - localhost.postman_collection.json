@@ -1,0 +1,422 @@
+{
+	"info": {
+		"_postman_id": "53b50cb1-d410-4849-9944-5aaef0689c21",
+		"name": "Stargate REST API - localhost",
+		"description": "Sample requests for Stargate's REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get an auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "af32a52e-545a-4361-8aa1-b397b15c2172",
+						"exec": [
+							"var response = JSON.parse(responseBody);",
+							"// console.log(response);",
+							"postman.setEnvironmentVariable(\"token\", response.authToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/v1/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"auth"
+					]
+				},
+				"description": "Before using Stargate's REST API, you have to generate a token to use in the header of subsequent requests."
+			},
+			"response": []
+		},
+		{
+			"name": "Read all keyspaces",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/v2/schemas/keyspaces",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"schemas",
+						"keyspaces"
+					]
+				},
+				"description": "Get the list of all keyspaces in the database"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a keyspace",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"users_keyspace\",\n    \"replicas\": 1\n}"
+				},
+				"url": {
+					"raw": "localhost:8082/v2/schemas/keyspaces",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"schemas",
+						"keyspaces"
+					]
+				},
+				"description": "Create a new keyspace"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove a keyspace",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/v2/schemas/keyspaces/users_keyspace",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"schemas",
+						"keyspaces",
+						"users_keyspace"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a table",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"users\",\n\t\"columnDefinitions\":\n\t  [\n        {\n\t      \"name\": \"firstname\",\n\t      \"typeDefinition\": \"text\"\n\t    },\n        {\n\t      \"name\": \"lastname\",\n\t      \"typeDefinition\": \"text\"\n\t    },\n\t    {\n\t      \"name\": \"email\",\n\t      \"typeDefinition\": \"text\"\n\t    },\n        {\n\t      \"name\": \"favorite color\",\n\t      \"typeDefinition\": \"text\"\n\t    }\n\t  ],\n\t\"primaryKey\":\n\t  {\n\t    \"partitionKey\": [\"firstname\"],\n\t    \"clusteringKey\": [\"lastname\"]\n\t  },\n\t\"tableOptions\":\n\t  {\n\t    \"defaultTimeToLive\": 0,\n\t    \"clusteringExpression\":\n\t      [{ \"column\": \"lastname\", \"order\": \"ASC\" }]\n\t  }\n}"
+				},
+				"url": {
+					"raw": "localhost:8082/v2/schemas/keyspaces/users_keyspace/tables",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"schemas",
+						"keyspaces",
+						"users_keyspace",
+						"tables"
+					]
+				},
+				"description": "Create a new table in the user_keyspace"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove a table",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/v2/schemas/keyspaces/users_keyspace/tables/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"schemas",
+						"keyspaces",
+						"users_keyspace",
+						"tables",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a row",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\": \"Mookie\",\n    \"lastname\": \"Betts\",\n    \"email\": \"mookie.betts@email.com\",\n    \"favorite color\": \"blue\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8082/v2/keyspaces/users_keyspace/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"keyspaces",
+						"users_keyspace",
+						"users"
+					]
+				},
+				"description": "Add a row to a table"
+			},
+			"response": []
+		},
+		{
+			"name": "Read a row",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "localhost:8082/v2/keyspaces/users_keyspace/users?where={\"firstname\": {\"$eq\": \"Mookie\"}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"keyspaces",
+						"users_keyspace",
+						"users"
+					],
+					"query": [
+						{
+							"key": "where",
+							"value": "{\"firstname\": {\"$eq\": \"Mookie\"}}"
+						}
+					]
+				},
+				"description": "Read a row from a table"
+			},
+			"response": []
+		},
+		{
+			"name": "Update a row",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"type": "text",
+						"value": "{{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"mookie.betts.new-email@email.com\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8082/v2/keyspaces/users_keyspace/users/Mookie/Betts",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"keyspaces",
+						"users_keyspace",
+						"users",
+						"Mookie",
+						"Betts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a row",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-Cassandra-Token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/v2/keyspaces/users_keyspace/users/Mookie",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"v2",
+						"keyspaces",
+						"users_keyspace",
+						"users",
+						"Mookie"
+					]
+				},
+				"description": "Delete a row from a table"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "31fd78ba-c0c4-4206-9b73-b40eacb622b6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e026c88a-e1cb-473b-a8e5-3fa0866a7f15",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "7c9b466c-b85d-4986-bd00-f2d9c887bb94",
+			"key": "username",
+			"value": "cassandra"
+		},
+		{
+			"id": "ea6b69c7-8030-4ae5-9481-81954673d908",
+			"key": "password",
+			"value": "cassandra"
+		},
+		{
+			"id": "87b336c6-d04b-441e-a574-7e5d13a7832d",
+			"key": "token",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
